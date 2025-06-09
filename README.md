@@ -45,7 +45,7 @@ It combines **speech-to-text**, **machine translation**, and **text-to-speech** 
 
 1. **Clone the Repository**
    ```bash
-   git clone https://github.com/yourusername/bhasavidvamsu.git
+   git clone https://github.com/kavyaa-tech/bhasavidvamsu.git
    cd bhasavidvamsu
 
 2. **Install Dependencies**
@@ -59,7 +59,7 @@ It combines **speech-to-text**, **machine translation**, and **text-to-speech** 
 
 4. **Run the App**
     ```bash
-    streamlit run app.py
+    streamlit run test.py
 
 **📸 Screenshots**
 Record Speech	Translated Output
