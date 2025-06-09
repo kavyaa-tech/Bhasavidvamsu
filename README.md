@@ -48,27 +48,27 @@ It combines **speech-to-text**, **machine translation**, and **text-to-speech** 
    git clone https://github.com/yourusername/bhasavidvamsu.git
    cd bhasavidvamsu
 
-2. **Install Dependencies
-  '''bash
-  pip install -r requirements.txt
+2. **Install Dependencies**
+   ```bash
+   pip install -r requirements.txt
 
-3. **Get an API Key from Sarvam.ai
+3. **Get an API Key from Sarvam.ai**
   Add your API key to the script:
   SARVAM_API_KEY = "your_api_key_here"
 
-4. **Run the App
+4. **Run the App**
   streamlit run app.py
 
-**📸 Screenshots
+**📸 Screenshots**
 Record Speech	Translated Output
 
-**📄 License
+**📄 License**
 This project is licensed under the MIT License.
 
-**🤝 Contributing
+**🤝 Contributing**
 Pull requests are welcome! For major changes, please open an issue first to discuss what you’d like to change.
 
-**✨ Acknowledgements
+**✨ Acknowledgements**
 Streamlit
 
 Sarvam.ai
