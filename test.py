@@ -4,10 +4,9 @@ import base64
 import tempfile
 import os
 import logging
-from streamlit_audio_recorder import audio_recorder
 
 # ------------------- CONFIG -------------------
-SARVAM_API_KEY = st.secrets["SARVAM_API_KEY"]
+SARVAM_API_KEY = st.secrets["SARVAM_API_KEY"]  # Make sure your secret is configured in Streamlit
 
 LANGUAGES = {
     "English": "en-IN",
@@ -85,17 +84,18 @@ col1, col2 = st.columns(2)
 input_lang = col1.selectbox("Input Language", list(LANGUAGES.keys()), index=0)
 output_lang = col2.selectbox("Output Language", list(LANGUAGES.keys()), index=1)
 
-st.markdown("### 🔴 Record your voice")
-audio_bytes = audio_recorder()
+st.markdown("### 🔴 Upload your voice recording (WAV format only)")
+audio_file = st.file_uploader("Upload a WAV file", type=["wav"])
 
-if audio_bytes:
+if audio_file:
+    audio_bytes = audio_file.read()
     st.audio(audio_bytes, format="audio/wav")
-    st.success("Audio captured successfully!")
+    st.success("Audio uploaded successfully!")
 
-    # Save to file
+    # Save to temp WAV file
     wav_path = save_audio(audio_bytes)
 
-    # STT
+    # Speech to Text
     st.write("Converting speech to text...")
     response = speech_to_text(wav_path, LANGUAGES[input_lang])
 
@@ -135,9 +135,8 @@ if audio_bytes:
 
     st.success(f"Translated: {translated_text}")
 
-    # TTS
+    # Text to Audio
     st.write("Generating audio...")
     text_to_audio(translated_text, LANGUAGES[output_lang])
-
 else:
-    st.info("Click the red microphone button to start recording.")
+    st.info("Please upload a WAV file to begin.")
