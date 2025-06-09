@@ -1,89 +1,74 @@
-🎙️ Bhasavidvamsu - Live Indian Language Translator
-Bhasavidvamsu is a Streamlit-based application that allows users to speak in one Indian language and receive a translated voice output in another Indian language, in real-time!
-It combines speech-to-text, machine translation, and text-to-speech into a seamless pipeline powered by Sarvam.ai APIs.
+# 🎙️ Bhasavidvamsu - Live Indian Language Translator
 
-🚀 Features
-🎤 Record speech using your microphone
+**Bhasavidvamsu** is a Streamlit-based application that allows users to **speak in one Indian language** and receive a **translated voice output** in another Indian language — in real-time!  
+It combines **speech-to-text**, **machine translation**, and **text-to-speech** into a seamless pipeline powered by **Sarvam.ai APIs**.
 
-📝 Convert spoken words into text via Speech-to-Text
+---
 
-🌐 Translate the text between Indian languages
+## 🚀 Features
 
-🔊 Hear the translated output via Text-to-Speech
+- 🎤 Record speech using your microphone
+- 📝 Convert spoken words into text via **Speech-to-Text**
+- 🌐 Translate the text between Indian languages
+- 🔊 Hear the translated output via **Text-to-Speech**
+- ⚙️ Easy-to-use interface built with **Streamlit**
 
-⚙️ Easy-to-use interface built with Streamlit
+---
 
-🗣️ Supported Languages
-English (en-IN)
+## 🗣️ Supported Languages
 
-Hindi (hi-IN)
+- English (en-IN)  
+- Hindi (hi-IN)  
+- Tamil (ta-IN)  
+- Telugu (te-IN)  
+- Kannada (kn-IN)  
+- Gujarati (gu-IN)  
+- Bengali (bn-IN)  
+- Malayalam (ml-IN)  
+- Marathi (mr-IN)  
 
-Tamil (ta-IN)
+---
 
-Telugu (te-IN)
+## 🛠️ Tech Stack
 
-Kannada (kn-IN)
+- **Python**
+- **Streamlit** for UI
+- **sounddevice** + **scipy** for audio capture and processing
+- **Sarvam.ai APIs**:
+  - Speech-to-Text (STT)
+  - Translate
+  - Text-to-Speech (TTS)
 
-Gujarati (gu-IN)
+---
 
-Bengali (bn-IN)
+## 🔧 Setup Instructions
 
-Malayalam (ml-IN)
+1. **Clone the Repository**
+   ```bash
+   git clone https://github.com/yourusername/bhasavidvamsu.git
+   cd bhasavidvamsu
 
-Marathi (mr-IN)
+2. **Install Dependencies
+  '''bash
+  pip install -r requirements.txt
 
-🛠️ Tech Stack
-Python
+3. **Get an API Key from Sarvam.ai
+  Add your API key to the script:
+  SARVAM_API_KEY = "your_api_key_here"
 
-Streamlit for UI
+4. **Run the App
+  streamlit run app.py
 
-sounddevice + scipy for audio capture and processing
-
-Sarvam.ai APIs:
-
-Speech-to-Text (STT)
-
-Translate
-
-Text-to-Speech (TTS)
-
-🔧 Setup Instructions
-Clone the Repository
-
-bash
-Copy
-Edit
-git clone https://github.com/yourusername/bhasavidvamsu.git
-cd bhasavidvamsu
-Install Dependencies
-
-bash
-Copy
-Edit
-pip install -r requirements.txt
-Get an API Key from Sarvam.ai
-Add your API key to the script:
-
-python
-Copy
-Edit
-SARVAM_API_KEY = "your_api_key_here"
-Run the App
-
-bash
-Copy
-Edit
-streamlit run app.py
-📸 Screenshots
+**📸 Screenshots
 Record Speech	Translated Output
 
-📄 License
+**📄 License
 This project is licensed under the MIT License.
 
-🤝 Contributing
+**🤝 Contributing
 Pull requests are welcome! For major changes, please open an issue first to discuss what you’d like to change.
 
-✨ Acknowledgements
+**✨ Acknowledgements
 Streamlit
 
 Sarvam.ai
