@@ -7,9 +7,11 @@ import base64
 import tempfile
 import os
 import logging
+import streamlit as st
+
 
 # ------------------- CONFIG -------------------
-SARVAM_API_KEY = "sk_e9vie8e9_ekhJZPn5vux8GrjRRBRVf5vv"  # <-- Put your API key here
+SARVAM_API_KEY = st.secrets["SARVAM_API_KEY"]
 
 LANGUAGES = {
     "English": "en-IN",
@@ -37,7 +39,7 @@ logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
 # ------------------- RECORD FUNCTION -------------------
-def record_audio(duration=6, fs=16000):
+def record_audio(duration=60, fs=16000):
     logger.debug("Starting audio recording...")
     st.info(f"Recording for {duration} seconds at {fs} Hz...")
     audio = sd.rec(int(duration * fs), samplerate=fs, channels=1, dtype='int16')
@@ -144,7 +146,7 @@ with col2:
                               key="output_lang_select")
     st.session_state.output_language = output_lang
 
-duration = st.slider("Recording Duration (seconds)", 2, 6, st.session_state.duration, 
+duration = st.slider("Recording Duration (seconds)", 2, 60, st.session_state.duration, 
                     key="duration_slider")
 st.session_state.duration = duration
 
@@ -217,7 +219,7 @@ if st.button("Record & Translate", key="translate"):
         st.write("Generating speech in output language...")
         audio_bytes = text_to_audio(translated_text, LANGUAGES[output_lang])
         if audio_bytes:
-            st.success("✅ Translation + voice output complete!")
+            st.success("Translation + voice output complete!")
             logger.debug("TTS completed successfully.")
         else:
             logger.warning("TTS failed to produce audio")
