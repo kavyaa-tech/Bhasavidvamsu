@@ -53,10 +53,13 @@ It combines **speech-to-text**, **machine translation**, and **text-to-speech** 
    pip install -r requirements.txt
 
 3. **Get an API Key from Sarvam.ai**
+   
   Add your API key to the script:
-  SARVAM_API_KEY = "your_api_key_here"
+   ```bash
+   SARVAM_API_KEY = "your_api_key_here"
 
-4. **Run the App**
+5. **Run the App**
+  ```bash
   streamlit run app.py
 
 **📸 Screenshots**
