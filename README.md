@@ -62,7 +62,8 @@ It combines **speech-to-text**, **machine translation**, and **text-to-speech** 
     streamlit run test.py
 
 **📸 Screenshots**
-Record Speech	Translated Output
+![image](https://github.com/user-attachments/assets/4dd8323f-b867-4127-89aa-a0a7d36876ac)
+
 
 **📄 License**
 This project is licensed under the MIT License.
