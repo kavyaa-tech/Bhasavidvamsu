@@ -1,6 +1,5 @@
-streamlit==1.35.0
-sounddevice==0.4.6
-scipy==1.13.0
-requests==2.32.2
-numpy==1.26.4
-libportaudio2
+streamlit>=1.30.0
+scipy>=1.10.0
+numpy>=1.22.0
+requests>=2.28.0
+streamlit-audio-recorder
