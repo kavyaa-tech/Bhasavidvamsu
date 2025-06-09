@@ -1,12 +1,14 @@
 import streamlit as st
+import av
+import numpy as np
+import tempfile
 import requests
 import base64
-import tempfile
 import os
-import logging
+from streamlit_webrtc import webrtc_streamer, AudioProcessorBase
 
-# ------------------- CONFIG -------------------
-SARVAM_API_KEY = st.secrets["SARVAM_API_KEY"]  # Make sure your secret is configured in Streamlit
+# ---- Configuration ----
+SARVAM_API_KEY = st.secrets["SARVAM_API_KEY"]
 
 LANGUAGES = {
     "English": "en-IN",
@@ -29,90 +31,67 @@ HEADERS = {
     "Content-Type": "application/json"
 }
 
-logging.basicConfig(level=logging.DEBUG)
-logger = logging.getLogger(__name__)
+# ---- Audio Processor ----
+class AudioProcessor(AudioProcessorBase):
+    def __init__(self):
+        self.recorded_frames = []
 
-# ------------------- FUNCTIONS -------------------
-def save_audio(audio_bytes):
-    with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as f:
-        f.write(audio_bytes)
-        return f.name
+    def recv(self, frame: av.AudioFrame) -> av.AudioFrame:
+        samples = frame.to_ndarray()
+        self.recorded_frames.append(samples)
+        return frame
 
-def speech_to_text(wav_path, language_code):
-    with open(wav_path, "rb") as f:
-        response = requests.post(
-            STT_API,
-            headers={"api-subscription-key": SARVAM_API_KEY},
-            files={"file": ("audio.wav", f, "audio/wav")},
-            data={"language_code": language_code}
-        )
-    os.remove(wav_path)
-    return response
-
-def text_to_audio(text, language_code):
-    payload = {
-        "text": text,
-        "target_language_code": language_code
-    }
-    response = requests.post(TTS_API, headers=HEADERS, json=payload)
-
-    if response.status_code != 200:
-        st.error("Text-to-speech failed.")
-        st.json(response.json())
-        return None
-
-    data = response.json()
-    audio_b64 = data.get("audios", [None])[0]
-
-    if not audio_b64:
-        st.error("No audio data in response.")
-        return None
-
-    audio_html = f"""
-    <audio autoplay controls>
-        <source src="data:audio/wav;base64,{audio_b64}" type="audio/wav">
-    </audio>
-    """
-    st.markdown(audio_html, unsafe_allow_html=True)
-    return base64.b64decode(audio_b64)
-
-# ------------------- UI -------------------
+# ---- Streamlit UI ----
 st.title("🎙️ Bhasavidvamsu - Live Indian Language Translator")
-st.markdown("Speak in one Indian language and get live translation + voice output in another.")
 
 col1, col2 = st.columns(2)
 input_lang = col1.selectbox("Input Language", list(LANGUAGES.keys()), index=0)
 output_lang = col2.selectbox("Output Language", list(LANGUAGES.keys()), index=1)
 
-st.markdown("### 🔴 Upload your voice recording (WAV format only)")
-audio_file = st.file_uploader("Upload a WAV file", type=["wav"])
+st.markdown("### 🔴 Record your voice below and wait for result:")
 
-if audio_file:
-    audio_bytes = audio_file.read()
-    st.audio(audio_bytes, format="audio/wav")
-    st.success("Audio uploaded successfully!")
+ctx = webrtc_streamer(
+    key="speech",
+    mode="SENDONLY",
+    audio_receiver_size=1024,
+    media_stream_constraints={"audio": True, "video": False},
+    audio_processor_factory=AudioProcessor,
+)
 
-    # Save to temp WAV file
-    wav_path = save_audio(audio_bytes)
+if ctx and ctx.audio_processor and st.button("Process Audio"):
+    # Save to WAV
+    audio_data = np.concatenate(ctx.audio_processor.recorded_frames, axis=1).flatten().astype(np.int16)
 
-    # Speech to Text
-    st.write("Converting speech to text...")
-    response = speech_to_text(wav_path, LANGUAGES[input_lang])
+    with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as f:
+        f.write(audio_data.tobytes())
+        wav_path = f.name
 
-    if response.status_code != 200:
+    # ---- Speech to Text ----
+    st.info("🔍 Converting speech to text...")
+    with open(wav_path, "rb") as f:
+        stt_response = requests.post(
+            STT_API,
+            headers={"api-subscription-key": SARVAM_API_KEY},
+            files={"file": ("audio.wav", f, "audio/wav")},
+            data={"language_code": LANGUAGES[input_lang]}
+        )
+
+    os.remove(wav_path)
+
+    if stt_response.status_code != 200:
         st.error("Speech-to-text failed.")
-        st.json(response.json())
+        st.json(stt_response.json())
         st.stop()
 
-    transcript = response.json().get("transcript", "").strip()
+    transcript = stt_response.json().get("transcript", "").strip()
     if not transcript:
         st.warning("Could not transcribe audio.")
         st.stop()
 
     st.success(f"Transcribed: {transcript}")
 
-    # Translation
-    st.write("Translating...")
+    # ---- Translate ----
+    st.info("Translating...")
     translate_response = requests.post(
         TRANSLATE_API,
         headers=HEADERS,
@@ -129,14 +108,31 @@ if audio_file:
         st.stop()
 
     translated_text = translate_response.json().get("translated_text", "").strip()
-    if not translated_text:
-        st.warning("No translated text.")
-        st.stop()
-
     st.success(f"Translated: {translated_text}")
 
-    # Text to Audio
-    st.write("Generating audio...")
-    text_to_audio(translated_text, LANGUAGES[output_lang])
-else:
-    st.info("Please upload a WAV file to begin.")
+    # ---- Text to Speech ----
+    st.info("Generating audio...")
+    tts_response = requests.post(
+        TTS_API,
+        headers=HEADERS,
+        json={"text": translated_text, "target_language_code": LANGUAGES[output_lang]}
+    )
+
+    if tts_response.status_code != 200:
+        st.error("Text-to-speech failed.")
+        st.json(tts_response.json())
+        st.stop()
+
+    audio_b64 = tts_response.json().get("audios", [None])[0]
+    if not audio_b64:
+        st.error("No audio returned.")
+        st.stop()
+
+    st.markdown(
+        f"""
+        <audio autoplay controls>
+            <source src="data:audio/wav;base64,{audio_b64}" type="audio/wav">
+        </audio>
+        """,
+        unsafe_allow_html=True,
+    )
