@@ -9,7 +9,7 @@ import os
 import logging
 
 # ------------------- CONFIG -------------------
-SARVAM_API_KEY = "sk_e9vie8e9_ekhJZPn5vux8GrjRRBRVf5vv"  # <-- Put your API key here
+SARVAM_API_KEY = os.getenv("SARVAM_API_KEY")
 
 LANGUAGES = {
     "English": "en-IN",
